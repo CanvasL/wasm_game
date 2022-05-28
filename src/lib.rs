@@ -16,3 +16,22 @@ pub fn hello(name: &str) {
         alert(name);
     }
 }
+
+#[wasm_bindgen]
+struct World {
+    width: usize,
+    size: usize,
+}
+
+#[wasm_bindgen]
+impl World {
+    pub fn new(width: usize) -> Self {
+        Self {
+            width: width,
+            size: width * width,
+        }
+    }
+    pub fn width(&self) -> usize {
+        self.width
+    }
+}
