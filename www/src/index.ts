@@ -1,11 +1,13 @@
 import init, {
-    World
+    World,
+    Direction
 } from 'wasm_game'
 
 init().then(() => {
     const CELL_SIZE = 20
-    const CELL_AMOUNT = 21
-    const world = World.new(CELL_AMOUNT)
+    const WORLD_WIDTH = 21
+    const snakeIndex = Date.now() % (WORLD_WIDTH * WORLD_WIDTH)
+    const world = World.new(WORLD_WIDTH, snakeIndex)
     const worldWidth = world.width()
     const fps = 5
 
@@ -14,6 +16,23 @@ init().then(() => {
 
     canvas.width = worldWidth * CELL_SIZE
     canvas.height = worldWidth * CELL_SIZE
+
+    document.addEventListener('keydown', e => {
+        switch(e.code) {
+            case 'ArrowUp':
+                world.change_snake_direction(Direction.Up);
+                break
+            case 'ArrowDown':
+                world.change_snake_direction(Direction.Down);
+                break
+            case 'ArrowLeft':
+                world.change_snake_direction(Direction.Left);
+                break
+            case 'ArrowRight':
+                world.change_snake_direction(Direction.Right);
+                break
+        }
+    })
 
     function drawWorld() {
         context.beginPath()
@@ -30,8 +49,8 @@ init().then(() => {
 
     function drawSnake() {
         const snake_index = world.snake_head_index()
-        const col = snake_index % worldWidth
         const row = Math.floor(snake_index / worldWidth)
+        const col = snake_index % worldWidth
 
         context.beginPath()
         context.fillRect(
