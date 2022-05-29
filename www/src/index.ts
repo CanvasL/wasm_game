@@ -9,7 +9,7 @@ init().then(() => {
     const worldWidth = world.width()
     const fps = 5
 
-    const canvas = document.getElementById('snake-world')
+    const canvas = <HTMLCanvasElement>document.getElementById('snake-world')
     const context = canvas.getContext('2d')
 
     canvas.width = worldWidth * CELL_SIZE
