@@ -15,6 +15,7 @@ init().then((wasm: any) => {
     const fps = 5
 
     const gameStatus = document.getElementById('game-status')
+    const gameScore = document.getElementById('game-score')
     const gameControlBtn = document.getElementById("game-start-btn")
 
     const canvas = <HTMLCanvasElement>document.getElementById('snake-world')
@@ -101,14 +102,11 @@ init().then((wasm: any) => {
             CELL_SIZE,
         )
         context.stroke()
-
-        // if (index === 123456789) {
-        //     alert("YOU WIN!")
-        // }
     }
 
     function drawScore() {
         gameStatus.textContent = world.game_status_info();
+        gameScore.textContent = String(world.score());
     }
 
 

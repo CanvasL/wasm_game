@@ -55,6 +55,7 @@ pub struct World {
     snake: Snake,
     next_cell: Option<SnakeCell>,
     status: Option<GameStatus>,
+    score: usize,
 }
 
 #[wasm_bindgen]
@@ -67,6 +68,7 @@ impl World {
             snake: snake,
             next_cell: None,
             status: None,
+            score: 0,
         }
     }
     pub fn width(&self) -> usize {
@@ -154,6 +156,9 @@ impl World {
     pub fn snake_length(&self) -> usize {
         self.snake.body.len()
     }
+    pub fn score(&self) -> usize {
+        self.score
+    }
     pub fn update(&mut self) {
         let temp = self.snake.body.clone();
         match self.next_cell {
@@ -175,6 +180,7 @@ impl World {
         }
 
         if self.reward_cell == Some(self.snake_head_index()) {
+            self.score += 10;
             if self.snake_length() < self.width * self.width {
                 self.reward_cell =
                     Some(World::gen_reward_cell(self.width * self.width, &self.snake.body));
