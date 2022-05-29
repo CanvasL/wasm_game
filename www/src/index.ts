@@ -3,10 +3,12 @@ import init, {
     Direction
 } from 'wasm_game'
 
-init().then(() => {
+import { random } from '../utils/random.js'
+
+init().then((wasm: any) => {
     const CELL_SIZE = 20
     const WORLD_WIDTH = 21
-    const snakeIndex = Date.now() % (WORLD_WIDTH * WORLD_WIDTH)
+    const snakeIndex = random(WORLD_WIDTH * WORLD_WIDTH)
     const world = World.new(WORLD_WIDTH, snakeIndex)
     const worldWidth = world.width()
     const fps = 5
@@ -18,17 +20,17 @@ init().then(() => {
     canvas.height = worldWidth * CELL_SIZE
 
     document.addEventListener('keydown', e => {
-        switch(e.code) {
-            case 'ArrowUp':
+        switch (e.key) {
+            case 'w':
                 world.change_snake_direction(Direction.Up);
                 break
-            case 'ArrowDown':
+            case 's':
                 world.change_snake_direction(Direction.Down);
                 break
-            case 'ArrowLeft':
+            case 'a':
                 world.change_snake_direction(Direction.Left);
                 break
-            case 'ArrowRight':
+            case 'd':
                 world.change_snake_direction(Direction.Right);
                 break
         }
@@ -48,11 +50,33 @@ init().then(() => {
     }
 
     function drawSnake() {
-        const snake_index = world.snake_head_index()
-        const row = Math.floor(snake_index / worldWidth)
-        const col = snake_index % worldWidth
+        const snakeCells = new Uint32Array(
+            wasm.memory.buffer,
+            world.snake_cells(),
+            world.snake_length()
+        )
+        snakeCells.forEach((cellIndex, i) => {
+            const row = Math.floor(cellIndex / worldWidth)
+            const col = cellIndex % worldWidth
+            context.beginPath()
+            context.fillStyle = i === 0 ? 'grey':'black'
+            context.fillRect(
+                col * CELL_SIZE,
+                row * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE,
+            )
+        })
+        context.stroke()
+    }
+
+    function drawReward() {
+        const index = world.reward_cell()
+        const row = Math.floor(index / worldWidth)
+        const col = index % worldWidth
 
         context.beginPath()
+        context.fillStyle = 'red'
         context.fillRect(
             col * CELL_SIZE,
             row * CELL_SIZE,
@@ -62,9 +86,11 @@ init().then(() => {
         context.stroke()
     }
 
+
     function draw() {
         drawWorld()
         drawSnake()
+        drawReward()
     }
 
     function run() {
