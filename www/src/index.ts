@@ -1,6 +1,7 @@
 import init, {
     World,
-    Direction
+    Direction,
+    GameStatus,
 } from 'wasm_game'
 
 import { random } from '../utils/random.js'
@@ -13,11 +14,25 @@ init().then((wasm: any) => {
     const worldWidth = world.width()
     const fps = 5
 
+    const gameStatus = document.getElementById('game-status')
+    const gameControlBtn = document.getElementById("game-start-btn")
+
     const canvas = <HTMLCanvasElement>document.getElementById('snake-world')
     const context = canvas.getContext('2d')
 
     canvas.width = worldWidth * CELL_SIZE
     canvas.height = worldWidth * CELL_SIZE
+
+    gameControlBtn.addEventListener('click', () => {
+        const status = world.game_status();
+        if (status == undefined) {
+            gameControlBtn.textContent = "游戏中"
+            world.start_game();
+            run();
+        } else {
+            location.reload();
+        }
+    })
 
     document.addEventListener('keydown', e => {
         switch (e.key) {
@@ -55,18 +70,20 @@ init().then((wasm: any) => {
             world.snake_cells(),
             world.snake_length()
         )
-        snakeCells.forEach((cellIndex, i) => {
-            const row = Math.floor(cellIndex / worldWidth)
-            const col = cellIndex % worldWidth
-            context.beginPath()
-            context.fillStyle = i === 0 ? 'grey':'black'
-            context.fillRect(
-                col * CELL_SIZE,
-                row * CELL_SIZE,
-                CELL_SIZE,
-                CELL_SIZE,
-            )
-        })
+        snakeCells
+            .filter((cellIdx, i) => !(i > 0 && cellIdx === snakeCells[0]))
+            .forEach((cellIndex, i) => {
+                const row = Math.floor(cellIndex / worldWidth)
+                const col = cellIndex % worldWidth
+                context.beginPath()
+                context.fillStyle = i === 0 ? 'grey' : 'black'
+                context.fillRect(
+                    col * CELL_SIZE,
+                    row * CELL_SIZE,
+                    CELL_SIZE,
+                    CELL_SIZE,
+                )
+            })
         context.stroke()
     }
 
@@ -85,9 +102,13 @@ init().then((wasm: any) => {
         )
         context.stroke()
 
-        if (index === 123456789) {
-            alert("YOU WIN!")
-        }
+        // if (index === 123456789) {
+        //     alert("YOU WIN!")
+        // }
+    }
+
+    function drawScore() {
+        gameStatus.textContent = world.game_status_info();
     }
 
 
@@ -95,9 +116,15 @@ init().then((wasm: any) => {
         drawWorld()
         drawSnake()
         drawReward()
+        drawScore()
     }
 
     function run() {
+        const status = world.game_status()
+        if (!(status === GameStatus.Playing)) {
+            gameControlBtn.textContent = "再玩一次"
+            return
+        }
         setTimeout(() => {
             context.clearRect(0, 0, canvas.width, canvas.height)
             world.update()
@@ -107,5 +134,4 @@ init().then((wasm: any) => {
     }
 
     draw()
-    run()
 })

@@ -11,6 +11,14 @@ extern "C" {
 }
 
 #[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub enum GameStatus {
+    Won,
+    Lost,
+    Playing,
+}
+
+#[wasm_bindgen]
 #[derive(PartialEq)]
 pub enum Direction {
     Up,
@@ -43,10 +51,10 @@ impl Snake {
 #[wasm_bindgen]
 pub struct World {
     width: usize,
-    // size: usize,
-    reward_cell: usize,
+    reward_cell: Option<usize>,
     snake: Snake,
     next_cell: Option<SnakeCell>,
+    status: Option<GameStatus>,
 }
 
 #[wasm_bindgen]
@@ -55,10 +63,10 @@ impl World {
         let snake = Snake::new(snake_index, 3);
         Self {
             width: width,
-            // size: width * width,
-            reward_cell: World::gen_reward_cell(width * width, &snake.body),
+            reward_cell: Some(World::gen_reward_cell(width * width, &snake.body)),
             snake: snake,
             next_cell: None,
+            status: None,
         }
     }
     pub fn width(&self) -> usize {
@@ -90,7 +98,7 @@ impl World {
         let row = snake_index / self.width;
         return match direction {
             Direction::Up => {
-                let border_hold = snake_index - (self.width - row) * self.width;
+                let border_hold = snake_index - row * self.width;
                 if snake_index == border_hold {
                     SnakeCell(self.width * (self.width - 1) + border_hold)
                 } else {
@@ -123,7 +131,21 @@ impl World {
             }
         };
     }
-    pub fn reward_cell(&self) -> usize {
+    pub fn start_game(&mut self) {
+        self.status = Some(GameStatus::Playing);
+    }
+    pub fn game_status(&self) -> Option<GameStatus> {
+        self.status
+    }
+    pub fn game_status_info(&self) -> String {
+        match self.status {
+            Some(GameStatus::Won) => "Won".to_string(),
+            Some(GameStatus::Lost) => "Lost".to_string(),
+            Some(GameStatus::Playing) => "Playing".to_string(),
+            None => "None".to_string(),
+        }
+    }
+    pub fn reward_cell(&self) -> Option<usize> {
         self.reward_cell
     }
     pub fn snake_cells(&self) -> *const SnakeCell {
@@ -147,12 +169,18 @@ impl World {
         for i in 1..len {
             self.snake.body[i] = SnakeCell(temp[i - 1].0);
         }
+        
+        if self.snake.body[1..len].contains(&self.snake.body[0]) {
+            self.status = Some(GameStatus::Lost);
+        }
 
-        if self.reward_cell == self.snake_head_index() {
+        if self.reward_cell == Some(self.snake_head_index()) {
             if self.snake_length() < self.width * self.width {
-                self.reward_cell = World::gen_reward_cell(self.width * self.width, &self.snake.body);
+                self.reward_cell =
+                    Some(World::gen_reward_cell(self.width * self.width, &self.snake.body));
             } else {
-                self.reward_cell = 123456789;
+                self.reward_cell = None;
+                self.status = Some(GameStatus::Won);
             }
             self.snake.body.push(SnakeCell(self.snake.body[1].0))
         }
