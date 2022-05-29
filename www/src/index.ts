@@ -84,6 +84,10 @@ init().then((wasm: any) => {
             CELL_SIZE,
         )
         context.stroke()
+
+        if (index === 123456789) {
+            alert("YOU WIN!")
+        }
     }
 
 

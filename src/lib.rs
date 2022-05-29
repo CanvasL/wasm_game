@@ -115,7 +115,7 @@ impl World {
             }
             Direction::Right => {
                 let border_hold = (row + 1) * self.width - 1;
-                if snake_index + 1 == border_hold {
+                if snake_index == border_hold {
                     SnakeCell(border_hold - self.width + 1)
                 } else {
                     SnakeCell(snake_index + 1)
@@ -146,6 +146,15 @@ impl World {
         let len = self.snake.body.len();
         for i in 1..len {
             self.snake.body[i] = SnakeCell(temp[i - 1].0);
+        }
+
+        if self.reward_cell == self.snake_head_index() {
+            if self.snake_length() < self.width * self.width {
+                self.reward_cell = World::gen_reward_cell(self.width * self.width, &self.snake.body);
+            } else {
+                self.reward_cell = 123456789;
+            }
+            self.snake.body.push(SnakeCell(self.snake.body[1].0))
         }
     }
 }
