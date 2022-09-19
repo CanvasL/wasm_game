@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GREEDY SNAKE</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            /* background: url(../assets/parchment.jpg); */
+        }
+
+        .app {
+            padding: 10px 10vw 0 10vw;
+            font-family: 'Courier New', Courier, monospace;
+            background: linear-gradient(to left, #d3959b, #bfe6ba);
+            height: 100vh;
+            font-weight: 700;
+        }
+
+        .flex-all-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-block {
+            margin: 10px 10px;
+            border: none;
+            border-radius: 1rem;
+            width: 160px;
+            height: 60px;
+        }
+
+        .header {
+            width: 100%;
+            height: 100px;
+            justify-content: space-between;
+            box-shadow: 0px 3px 5px 5px rgb(141, 127, 127);
+            border-radius: 1rem;
+        }
+
+        button {
+            background-color: aqua;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: aquamarine;
+            box-shadow: 5px 3px 5px 5px gray;
+        }
+
+        .game-status {
+            color: none;
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 1px 0px 3px orange, 2px 1px 3px rgb(44, 171, 44), -2px 0px 7px rgb(172, 144, 33);
+        }
+
+        .game-score {
+            background-color: rgb(184, 192, 39);
+        }
+
+        .content-wraper {
+            margin-top: 50px;
+            background-color: rgb(75, 139, 74);
+            box-shadow: 10px 10px 5px 5px rgb(68, 96, 26);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header flex-all-center">
+            <button class="flex-all-center status-block" id="game-start-btn">Start</button>
+            <span id="game-status" class="game-status"></span>
+            <span id="game-score" class="game-score flex-all-center status-block"></span>
+        </div>
+        <div class="flex-all-center">
+            <canvas class="content-wraper " id="snake-world"></canvas>
+        </div>
+    </div>
+
+    <script src="./bootstrap.js"></script>
+</body>
+
+</html>

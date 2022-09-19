@@ -1,3 +1,14 @@
 /target
-/www/node_modules
+/client/node_modules
 /Cargo.lock
+
+ethereum/node_modules
+ethereum/.env
+ethereum/coverage
+ethereum/coverage.json
+ethereum/typechain
+ethereum/typechain-types
+
+#Hardhat files
+ethereum/cache
+ethereum/artifacts
